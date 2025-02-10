@@ -20,4 +20,6 @@ def main():
             print(f"Port {port} is open")
         else:
             print(f"Port {port} is closed")
+
+
             
