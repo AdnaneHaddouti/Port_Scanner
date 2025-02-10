@@ -1,23 +1,29 @@
 import socket
+import threading
 
-def scan_port(ip, port):
-    """Vérifie si un port est ouvert sur une IP donnée"""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(1)  # Timeout pour éviter de bloquer le script
-    result = s.connect_ex((ip, port))  # Renvoie 0 si le port est ouvert
-    s.close()
-    return result == 0
+HOST = '127.0.0.1'  # Adresse locale
+PORTS = [22, 5050]  # Ports à écouter
 
-def main():
-    target = input("Entrez l'adresse IP cible : ")
-    ports = [21, 22, 25, 53, 80, 443, 3306, 8080]  # Liste de ports à scanner
-    
-    print(f"\nScan en cours sur {target}...\n")
-    for port in ports:
-        if scan_port(target, port):
-            print(f"[+] Port {port} est **OUVERT** ✅")
-        else:
-            print(f"[-] Port {port} est fermé ❌")
+def start_server(port):
+    """Crée un serveur qui écoute sur un port donné"""
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((HOST, port))
+    server.listen(5)
+    print(f"📡 Serveur en écoute sur {HOST}:{port}...")
 
-if __name__ == "__main__":
-    main()
+    while True:
+        client, addr = server.accept()
+        print(f"✅ Connexion reçue de {addr} sur le port {port}")
+        client.send(f"Hello! Port {port} actif.\n".encode())
+        client.close()
+
+# Lancer un thread pour chaque port
+for port in PORTS:
+    threading.Thread(target=start_server, args=(port,), daemon=True).start()
+
+# Garder le programme actif
+try:
+    while True:
+        pass
+except KeyboardInterrupt:
+    print("\n🛑 Serveur arrêté.")
