@@ -28,7 +28,7 @@ for port in PORTS:
     thread.start()
     threads.append(thread)
 
-# Garder le programme actif
+# Garder le programme actifqsQS
 try:
     while True:
         pass
